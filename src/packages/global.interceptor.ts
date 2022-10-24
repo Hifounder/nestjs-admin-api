@@ -8,7 +8,6 @@ import {
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Observable, map } from 'rxjs';
 import { Logger } from 'winston';
-
 @Injectable()
 export class GlobalInterceptor implements NestInterceptor {
   constructor(
@@ -42,9 +41,16 @@ export class GlobalInterceptor implements NestInterceptor {
     });
 
     return next.handle().pipe(
-      map((data) => {
-        this.logger.info(`${controller}::${handler}::Response`, { data: data });
-        return data;
+      map(({ code, message, data }) => {
+        this.logger.info(`${controller}::${handler}::Response`, {
+          data: { ...data, message },
+        });
+
+        return {
+          code: code,
+          data: data,
+          message: message,
+        };
       }),
     );
   }

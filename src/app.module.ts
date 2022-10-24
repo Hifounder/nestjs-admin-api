@@ -3,11 +3,17 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
 import { WinstonConfigService } from './packages/winston.config';
-import { ApmModule } from './apm/apm.module';
+import { ApmModule } from './packages/apm/apm.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalInterceptor } from './packages/global.interceptor';
 import { GlobalFilter } from './packages/global.filter';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { AuthorizationModule } from './packages/authorization/authorization.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { LoginModule } from './modules/login/login.module';
+import { RolesModule } from './modules/roles/roles.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,11 +28,16 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       database: process.env.TYPEORM_DATABASE,
       synchronize: process.env.TYPEORM_SYNC === 'true',
       logging: process.env.TYPEORM_LOGGING === 'true',
-      entities: [],
+      entities: ['./**/*.entity.js'],
     }),
     WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
     ApmModule,
     PrometheusModule.register(),
+    AuthorizationModule,
+    AuthModule,
+    AdminModule,
+    LoginModule,
+    RolesModule,
   ],
   providers: [
     {
