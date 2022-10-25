@@ -2,17 +2,17 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { newEnforcer } from 'casbin';
 import TypeORMAdapter from 'typeorm-adapter';
 import { AuthorizationService } from './authorization.service';
-
-export const AUTHORIZATION_ENFORCER = 'authorization_enforcer';
+import { AUTHORIZATION_ENFORCER } from './token.const';
 
 export interface RegisterOptions {
+  path: string;
   global?: boolean;
 }
 
 @Module({})
 export class AuthorizationModule {
   static register(options: RegisterOptions): DynamicModule {
-    const { global = false } = options;
+    const { path, global = false } = options;
     const providers = [
       {
         provide: AUTHORIZATION_ENFORCER,
@@ -25,7 +25,7 @@ export class AuthorizationModule {
             password: process.env.TYPEORM_PASSWORD,
             database: process.env.TYPEORM_DATABASE,
           });
-          const e = await newEnforcer('../../model.conf', a);
+          const e = await newEnforcer(path, a);
           return e;
         },
       },

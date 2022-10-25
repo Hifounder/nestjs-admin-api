@@ -13,6 +13,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { LoginModule } from './modules/login/login.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -33,7 +34,9 @@ import { RolesModule } from './modules/roles/roles.module';
     WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
     ApmModule,
     PrometheusModule.register(),
-    AuthorizationModule,
+    AuthorizationModule.register({
+      path: join(__dirname, '../model.conf'),
+    }),
     AuthModule,
     AdminModule,
     LoginModule,

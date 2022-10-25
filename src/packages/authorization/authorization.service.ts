@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { Enforcer } from 'casbin';
-import { AUTHORIZATION_ENFORCER } from './authorization.module';
+import { AUTHORIZATION_ENFORCER } from './token.const';
+
 export enum AuthorizationAction {
   CREATE = 'create',
   READ = 'read',
