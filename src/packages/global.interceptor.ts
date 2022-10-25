@@ -47,9 +47,9 @@ export class GlobalInterceptor implements NestInterceptor {
         });
 
         return {
-          code: code,
+          code: code ? code : 200,
           data: data,
-          message: message,
+          message: message ? message : 'Success',
         };
       }),
     );

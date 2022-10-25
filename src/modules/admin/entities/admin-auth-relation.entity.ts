@@ -1,6 +1,11 @@
 import { Admin } from './admin.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { IsEnum, IsNumber } from 'class-validator';
 
+export enum AuthType {
+  local = 'local',
+  third = 'third',
+}
 @Entity()
 export class AdminAuthRelation {
   @PrimaryGeneratedColumn({ comment: '令牌ID' })
@@ -10,8 +15,10 @@ export class AdminAuthRelation {
   admin?: Admin;
 
   @Column({ comment: '後台人員ID' })
+  @IsNumber()
   adminId?: number;
 
   @Column({ comment: '登入方式' })
-  authType?: 'local' | 'third';
+  @IsEnum(AuthType)
+  authType?: AuthType;
 }

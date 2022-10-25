@@ -1,71 +1,69 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { AdminStatus } from '../entities/admin.entity';
+import { Admin } from '../entities/admin.entity';
+import { IntersectionType, PartialType, PickType } from '@nestjs/mapped-types';
+import { PageReqDto, PageRespDto } from 'src/packages/utils/pages';
+import { AdminProfile } from '../entities/admin-profile.entity';
+import { AdminLocalAuth } from '../entities/admin-local-auth.entity';
+import { AdminAuthRelation } from '../entities/admin-auth-relation.entity';
 
 // Req
+// 後台人員列表 傳入
+export class GetAdminListReqDto extends PartialType(
+  IntersectionType(
+    IntersectionType(PageReqDto),
+    PickType(Admin, ['status'] as const),
+    PickType(AdminProfile, ['name'] as const),
+  ),
+) {}
 // 查詢後台人員 傳入
-export class findByLocalReqDto {
-  @IsString()
-  account: string;
-
-  @IsString()
-  password: string;
-}
+export class FindByLocalReqDto extends PartialType(
+  PickType(AdminLocalAuth, ['account', 'password'] as const),
+) {}
 // 驗證一方人員 傳入
-export class findByLocalValidateReqDto {
-  @IsString()
-  account: string;
-
-  @IsString()
-  name: string;
-
-  @IsEnum(AdminStatus)
-  status: AdminStatus;
-}
+export class FindByLocalValidateReqDto extends PartialType(
+  IntersectionType(
+    PickType(AdminLocalAuth, ['account'] as const),
+    PickType(Admin, ['status'] as const),
+    PickType(AdminProfile, ['name'] as const),
+  ),
+) {}
 // 建立後台人員 傳入
-export class createAdminReqDto {
-  @IsString()
-  account: string;
-
-  @IsString()
-  password: string;
-
-  @IsString()
-  name: string;
-}
+export class CreateAdminReqDto extends IntersectionType(
+  PickType(AdminLocalAuth, ['account', 'password'] as const),
+  PickType(AdminProfile, ['name'] as const),
+) {}
 // 修改後台人員 傳入
-export class editAdminReqDto {
-  @IsString()
-  name: string;
-
-  @IsEnum(AdminStatus)
-  @IsOptional()
-  status?: AdminStatus;
-}
+export class EditAdminReqDto extends PartialType(
+  IntersectionType(
+    PickType(Admin, ['status'] as const),
+    PickType(AdminProfile, ['name'] as const),
+  ),
+) {}
 
 // Resp
+// 後台人員列表 回傳
+export class GetAdminListRespDto extends IntersectionType(PageRespDto<Admin>) {}
+// 後台人員資訊 回傳
+export class GetAdminInfoRespDto extends IntersectionType(Admin) {}
 // 查詢後台人員 回傳
-export class findByLocalRespDto {
-  account?: string;
-  name?: string;
-  status?: AdminStatus;
-}
+export class FindByLocalRespDto extends IntersectionType(
+  PickType(AdminLocalAuth, ['account'] as const),
+  PickType(Admin, ['status'] as const),
+  PickType(AdminProfile, ['name'] as const),
+) {}
 // 驗證一方人員 回傳
-export class findByLocalValidateRespDto {
-  id: number;
-  status: AdminStatus;
-  name: string;
-  authType: 'local' | 'third';
-}
+export class FindByLocalValidateRespDto extends IntersectionType(
+  PickType(Admin, ['id', 'status'] as const),
+  PickType(AdminProfile, ['name'] as const),
+  PickType(AdminAuthRelation, ['authType'] as const),
+) {}
 // 建立後台人員 回傳
-export class createAdminRespDto {
-  id: number;
-  status: AdminStatus;
-  name: string;
-  authType: 'local' | 'third';
-}
+export class CreateAdminRespDto extends IntersectionType(
+  PickType(Admin, ['id', 'status'] as const),
+  PickType(AdminProfile, ['name'] as const),
+  PickType(AdminAuthRelation, ['authType'] as const),
+) {}
 // 修改後台人員 回傳
-export class editAdminRespDto {
-  id: number;
-  status: AdminStatus;
-  name: string;
-}
+export class EditAdminRespDto extends IntersectionType(
+  PickType(Admin, ['id', 'status'] as const),
+  PickType(AdminProfile, ['name'] as const),
+) {}

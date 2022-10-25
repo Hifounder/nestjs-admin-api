@@ -1,11 +1,6 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { IsEnum, IsNumber } from 'class-validator';
+import { Basic } from 'src/packages/utils/entity';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { AdminAuthRelation } from './admin-auth-relation.entity';
 import { AdminProfile } from './admin-profile.entity';
 
@@ -17,15 +12,13 @@ export enum AdminStatus {
 }
 
 @Entity()
-export class Admin {
-  @PrimaryGeneratedColumn({ comment: '後台人員ID' })
-  id?: number;
-
+export class Admin extends Basic {
   @OneToOne(() => AdminProfile)
   @JoinColumn()
   profile?: AdminProfile;
 
   @Column({ comment: '後台人員資料ID', nullable: true })
+  @IsNumber()
   profileId?: number;
 
   @Column({
@@ -34,7 +27,8 @@ export class Admin {
     default: AdminStatus.DISABLE,
     comment: '狀態',
   })
-  status?: number;
+  @IsEnum(AdminStatus)
+  status: AdminStatus;
 
   @OneToMany(
     () => AdminAuthRelation,

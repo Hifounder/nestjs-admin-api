@@ -1,3 +1,4 @@
+import { IsString } from 'class-validator';
 import {
   Column,
   Entity,
@@ -17,8 +18,9 @@ export class AdminProfile {
   admin?: Admin;
 
   @Column({ comment: '後台人員ID', nullable: true })
-  adminId?: string;
+  adminId?: number;
 
   @Column({ comment: '名字' })
+  @IsString()
   name?: string;
 }

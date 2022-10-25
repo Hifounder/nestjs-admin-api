@@ -1,23 +1,28 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Get,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginDto } from './dto/login.dto';
+import { LoginReqDto } from './dto/login.dto';
 import { LoginService } from './login.service';
 @Controller('login')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @Post('/getToken')
-  getTokenByUser(@Body() loginDto: LoginDto) {
-    return this.loginService.createToken(loginDto);
+  // 取得 Local JWT Token
+  @Post('/token')
+  async getTokenByUser(@Body() loginReqDto: LoginReqDto): Promise<RespBody> {
+    return { data: await this.loginService.createToken(loginReqDto) };
   }
 
-  @Post('/login/jwt')
+  // Token 換取資訊
+  @Get('/local')
   @UseGuards(AuthGuard('jwt'))
-  async loginJWT(@Request() req: any): Promise<RespBody> {
-    return {
-      code: 200,
-      message: '成功',
-      data: req.user,
-    };
+  async getInfoByUser(@Request() req: any): Promise<RespBody> {
+    return { data: req.user };
   }
 }

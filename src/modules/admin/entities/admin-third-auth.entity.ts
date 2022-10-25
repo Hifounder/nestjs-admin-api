@@ -1,17 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { IsNumber, IsString } from 'class-validator';
+import { Basic } from 'src/packages/utils/entity';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { AdminAuthRelation } from './admin-auth-relation.entity';
 
 @Entity()
-export class AdminThirdAuth {
-  @PrimaryGeneratedColumn({ comment: '三方登入ID' })
-  id?: number;
-
+export class AdminThirdAuth extends Basic {
   @Column({ comment: '三方公開ID' })
   openId?: string;
 
@@ -19,6 +12,7 @@ export class AdminThirdAuth {
   loginType?: string;
 
   @Column({ comment: '訪問令牌' })
+  @IsString()
   access_token?: string;
 
   @OneToOne(() => AdminAuthRelation)
@@ -26,5 +20,6 @@ export class AdminThirdAuth {
   auth?: AdminAuthRelation;
 
   @Column({ comment: '令牌ID', nullable: true })
-  authId?: string;
+  @IsNumber()
+  authId?: number;
 }
