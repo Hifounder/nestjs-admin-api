@@ -8,7 +8,7 @@
 * Logging - winston
 * Monitor - Prometheus
 * APM - ELK
-* ORM - TypeORM@3.x
+* ORM - TypeORM v3.x
 
 ## How To Use
 ```zsh
