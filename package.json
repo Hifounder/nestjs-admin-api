@@ -35,7 +35,6 @@
     "class-validator": "^0.13.2",
     "dayjs": "^1.11.5",
     "elastic-apm-node": "^3.38.0",
-    "mo": "^1.7.3",
     "mysql2": "^2.3.3",
     "nest-winston": "^1.7.1",
     "passport": "^0.6.0",

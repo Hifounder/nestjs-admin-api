@@ -1,0 +1,20 @@
+version: '3.7'
+
+networks:
+  local:
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    platform: linux/amd64
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - local
+    environment:
+      - MYSQL_ROOT_PASSWORD=123qwe
+      - MYSQL_DATABASE=nest-admin-api
+    ports:
+      - 3306:3306

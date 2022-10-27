@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -22,6 +22,8 @@ import {
   AuthType,
 } from './entities/admin-auth-relation.entity';
 import { MD5 } from 'src/packages/utils/utils';
+import { Enforcer } from 'casbin';
+import { AUTHORIZATION_ENFORCER } from 'src/packages/authorization/token.const';
 
 @Injectable()
 export class AdminService {
@@ -34,6 +36,7 @@ export class AdminService {
     private readonly adminLocalAuthRepo: Repository<AdminLocalAuth>,
     @InjectRepository(AdminAuthRelation)
     private readonly adminAuthRelationRepo: Repository<AdminAuthRelation>,
+    @Inject(AUTHORIZATION_ENFORCER) private readonly enforcer: Enforcer,
   ) {}
   // 後台人員列表
   async getAdminList({
@@ -146,11 +149,16 @@ export class AdminService {
     await this.adminAuthRelationRepo.save(adminAuthRelation);
     await this.adminLocalAuthRepo.save(adminLocalAuth);
 
+    for (const role of dto.roles) {
+      await this.enforcer.addRoleForUser(`${admin.id}`, role);
+    }
+
     return {
       id: admin.id,
       status: admin.status,
       name: adminProfile.name,
       authType: adminAuthRelation.authType,
+      roles: dto.roles,
     };
   }
   // 修改後台人員
@@ -169,10 +177,15 @@ export class AdminService {
       },
     });
 
+    for (const role of dto.roles) {
+      await this.enforcer.addRoleForUser(`${admin.id}`, role);
+    }
+
     return {
       id: admin.id,
       status: admin.status,
       name: adminProfile.name,
+      roles: dto.roles,
     };
   }
   // 刪除後台人員(改狀態)
@@ -184,10 +197,9 @@ export class AdminService {
       },
       where: { id },
     });
-    if (!admin) {
-      throw new ForbiddenException();
-    }
+    if (!admin) throw new ForbiddenException();
     if (admin.status === AdminStatus.DELETE) return;
     await this.adminRepo.save({ id: admin.id, status: AdminStatus.DELETE });
+    await this.enforcer.deleteUser(`${admin.id}`);
   }
 }

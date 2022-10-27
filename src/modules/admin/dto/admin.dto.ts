@@ -4,6 +4,8 @@ import { PageReqDto, PageRespDto } from 'src/packages/utils/pages';
 import { AdminProfile } from '../entities/admin-profile.entity';
 import { AdminLocalAuth } from '../entities/admin-local-auth.entity';
 import { AdminAuthRelation } from '../entities/admin-auth-relation.entity';
+import { Role } from 'src/packages/utils/role';
+import { IsNotEmpty } from 'class-validator';
 
 // Req
 // 後台人員列表 傳入
@@ -30,12 +32,16 @@ export class FindByLocalValidateReqDto extends PartialType(
 export class CreateAdminReqDto extends IntersectionType(
   PickType(AdminLocalAuth, ['account', 'password'] as const),
   PickType(AdminProfile, ['name'] as const),
-) {}
+) {
+  @IsNotEmpty()
+  roles: Role[];
+}
 // 修改後台人員 傳入
 export class EditAdminReqDto extends PartialType(
   IntersectionType(
     PickType(Admin, ['status'] as const),
     PickType(AdminProfile, ['name'] as const),
+    PickType(CreateAdminReqDto, ['roles'] as const),
   ),
 ) {}
 
@@ -61,9 +67,11 @@ export class CreateAdminRespDto extends IntersectionType(
   PickType(Admin, ['id', 'status'] as const),
   PickType(AdminProfile, ['name'] as const),
   PickType(AdminAuthRelation, ['authType'] as const),
+  PickType(CreateAdminReqDto, ['roles'] as const),
 ) {}
 // 修改後台人員 回傳
 export class EditAdminRespDto extends IntersectionType(
   PickType(Admin, ['id', 'status'] as const),
   PickType(AdminProfile, ['name'] as const),
+  PickType(CreateAdminRespDto, ['roles'] as const),
 ) {}

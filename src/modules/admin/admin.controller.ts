@@ -16,9 +16,10 @@ import {
   EditAdminReqDto,
   GetAdminListReqDto,
 } from './dto/admin.dto';
+import { RoleGuard } from 'src/packages/guards/role.guard';
 
-@Controller('admin')
-@UseGuards(AuthGuard('jwt'))
+@Controller()
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
   // 後台人員列表

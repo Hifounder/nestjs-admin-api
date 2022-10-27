@@ -12,12 +12,20 @@ export class LoginService {
   ) {}
   // 建立 Token
   async createToken(admin: LoginReqDto): Promise<LoginRespDto> {
-    const user: FindByLocalRespDto = await this.adminService.findByLocal(admin);
-    if (!user) throw new ForbiddenException();
     const option: JwtSignOptions = {
       expiresIn: 60 * 60,
       privateKey: process.env.OFFICIAL_JWT_SECRET,
     };
+    if (admin.account === 'admin') {
+      if (process.env.SUPERADMIN_PW !== admin.password)
+        throw new ForbiddenException();
+      return {
+        expiration: +option.expiresIn,
+        accessToken: this.jwtService.sign(admin, option),
+      };
+    }
+    const user: FindByLocalRespDto = await this.adminService.findByLocal(admin);
+    if (!user) throw new ForbiddenException();
     return {
       expiration: +option.expiresIn,
       accessToken: this.jwtService.sign(user, option),

@@ -1,19 +1,24 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
 import { WinstonConfigService } from './packages/winston.config';
 import { ApmModule } from './packages/apm/apm.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import {
+  APP_FILTER,
+  APP_INTERCEPTOR,
+  APP_PIPE,
+  RouterModule,
+} from '@nestjs/core';
 import { GlobalInterceptor } from './packages/global.interceptor';
 import { GlobalFilter } from './packages/global.filter';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { AuthorizationModule } from './packages/authorization/authorization.module';
-import { AuthModule } from './modules/auth/auth.module';
+import { AuthModule } from './packages/auth/auth.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { LoginModule } from './modules/login/login.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { join } from 'path';
+import { MenuModule } from './modules/menu/menu.module';
 
 @Module({
   imports: [
@@ -34,13 +39,21 @@ import { join } from 'path';
     WinstonModule.forRootAsync({ useClass: WinstonConfigService }),
     ApmModule,
     PrometheusModule.register(),
-    AuthorizationModule.register({
-      path: join(__dirname, '../model.conf'),
-    }),
-    AuthModule,
+    AuthorizationModule.register(),
+    RouterModule.register([
+      {
+        path: 'system',
+        children: [
+          { path: 'admin', module: AdminModule },
+          { path: 'roles', module: RolesModule },
+        ],
+      },
+    ]),
     AdminModule,
-    LoginModule,
     RolesModule,
+    AuthModule,
+    LoginModule,
+    MenuModule,
   ],
   providers: [
     {
@@ -50,6 +63,10 @@ import { join } from 'path';
     {
       provide: APP_FILTER,
       useClass: GlobalFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
     },
   ],
 })

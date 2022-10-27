@@ -1,15 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-
 import { Enforcer } from 'casbin';
 import { AUTHORIZATION_ENFORCER } from './token.const';
 
 export enum AuthorizationAction {
-  CREATE = 'create',
-  READ = 'read',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  NONE = 'none',
+  POST = 'POST',
+  GET = 'GET',
+  PATCH = 'PATCH',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  NONE = 'NONE',
 }
+
 @Injectable()
 export class AuthorizationService {
   constructor(
@@ -23,12 +24,13 @@ export class AuthorizationService {
   public mappingAction(method: string): AuthorizationAction {
     switch (method.toUpperCase()) {
       case 'GET':
-        return AuthorizationAction.READ;
+        return AuthorizationAction.GET;
       case 'POST':
-        return AuthorizationAction.CREATE;
+        return AuthorizationAction.POST;
       case 'PATCH':
+        return AuthorizationAction.PATCH;
       case 'PUT':
-        return AuthorizationAction.UPDATE;
+        return AuthorizationAction.PUT;
       case 'DELETE':
         return AuthorizationAction.DELETE;
       default:
