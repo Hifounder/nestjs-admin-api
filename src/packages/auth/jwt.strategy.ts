@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any): Promise<FindByLocalValidateRespDto> {
-    if (payload.accoint === 'admin') {
+    if (payload.account === 'admin') {
       if (payload.password !== process.env.SUPERADMIN_PW)
         throw new UnauthorizedException();
       return {
