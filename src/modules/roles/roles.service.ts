@@ -11,15 +11,18 @@ export class RolesService {
   ) {}
   // 新增角色規則
   async insertRoleRule(role: Role, dto: InsertRoleRuleDto[]): Promise<boolean> {
-    dto.forEach((obj) => (obj.role = role));
-    for (const rule of dto) {
-      await this.enforcer.addPolicy(...Object.values(rule));
+    for (const rule of dto.map((obj) => Object.values(obj))) {
+      rule.unshift(role);
+      await this.enforcer.addPolicy(...rule);
     }
     return true;
   }
   // 刪除角色規則
   async deleteRoleRule(role: Role, dto: DeleteRoleRuleDto[]): Promise<boolean> {
-    dto.forEach((obj) => (obj.role = role));
-    return this.enforcer.removePolicies(dto.map((obj) => Object.values(obj)));
+    for (const rule of dto.map((obj) => Object.values(obj))) {
+      rule.unshift(role);
+      await this.enforcer.removePolicy(...rule);
+    }
+    return true;
   }
 }

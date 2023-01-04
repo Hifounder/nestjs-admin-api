@@ -1,4 +1,9 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -139,9 +144,19 @@ export class AdminService {
     };
     const adminLocalAuth: AdminLocalAuth = {
       account: dto.account,
-      password: dto.password,
+      password: MD5(dto.password),
       auth: adminAuthRelation,
     };
+    await this.adminLocalAuthRepo.find();
+
+    const hasOne = await this.adminLocalAuthRepo.findOne({
+      where: {
+        account: adminLocalAuth.account,
+        password: adminLocalAuth.password,
+      },
+    });
+
+    if (hasOne) throw new NotAcceptableException();
 
     await this.adminRepo.save(admin);
     await this.adminProfileRepo.save(adminProfile);

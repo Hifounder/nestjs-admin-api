@@ -24,6 +24,7 @@ export class LoginService {
         accessToken: this.jwtService.sign(admin, option),
       };
     }
+    console.log(admin);
     const user: FindByLocalRespDto = await this.adminService.findByLocal(admin);
     if (!user) throw new ForbiddenException();
     return {
